@@ -1,0 +1,49 @@
+trigger:
+- master  # Specify the branch to trigger the pipeline
+
+pool:
+  name: 'default'  # Use an Ubuntu-based agent
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.x'  # Choose the Node.js version you need
+    
+- script: |
+    # Create the 'test' directory if it doesn't exist
+    mkdir test
+  displayName: 'Create test Directory'
+
+- script: |
+    npm install
+    npm test  # Run your tests here
+  displayName: 'Install and Test'
+
+- script: |
+    npm run build  # Build your Node.js application
+  displayName: 'Build'
+
+
+- powershell: |
+    # Download Docker for Windows
+    Invoke-WebRequest -Uri https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe?_gl=1*7wv30r*_ga*NTM1Njk4MDE0LjE2OTM5MDQ4OTA.*_ga_XJWPQMJYHQ*MTY5MzkwNDg5MC4xLjEuMTY5MzkwNDkxNy4zMy4wLjA. -OutFile docker-installer.exe
+
+    # Install Docker silently (no user interaction)
+    Start-Process -Wait -FilePath .\docker-installer.exe -ArgumentList '/S'
+
+    # Verify Docker installation
+    docker --version
+  displayName: 'Install and Verify Docker'
+  condition: eq(variables['Agent.OS'], 'Windows_NT')  # Run only on Windows agents
+
+
+- script: |
+      # Build the Docker image
+      docker build -t my-node-app:latest .
+  displayName: 'Build Docker Image'
+
+#- task: PublishBuildArtifacts@1
+#  inputs:
+#    pathToPublish: 'test'  # Path to your application's build artifacts
+#    artifactName: 'drop'
+# displayName: 'Publish Artifact'
