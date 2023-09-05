@@ -1,0 +1,13 @@
+{
+  "name": "hello-world-nodejs",
+  "version": "1.0.0",
+  "description": "A simple Hello, World! Node.js program",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js", 
+    "build": "echo 'Building the project...'" 
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {}
+}
